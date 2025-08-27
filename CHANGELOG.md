@@ -7,6 +7,7 @@
 - **打包优化**: 打包后的程序无需外部数据文件即可运行
 - **新增工具**: 添加`convert_json_to_python.py`脚本用于数据转换
 - **性能提升**: 数据加载速度更快，程序启动更稳定
+- **Release工作流**: 新增专门的Release构建和上传工作流，确保所有平台构建产物都能正确上传
 
 ### 🔧 修复
 - **GitHub Actions**: 更新 `actions/upload-artifact` 从 v3 到 v4，解决弃用警告
@@ -14,6 +15,7 @@
 - **权限配置**: 添加 `permissions` 配置，解决Release访问权限问题
 - **工作流权限**: 配置 `contents: write` 和 `actions: read` 权限
 - **YAML格式**: 修复工作流文件中的缩进错误，解决PowerShell解析失败问题
+- **搜索功能**: 修复元素符号搜索的大小写敏感问题，现在支持大小写不敏感搜索
 
 ### 📋 技术更新
 - 所有工作流文件现在使用最新的GitHub Actions版本

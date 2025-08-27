@@ -1,0 +1,233 @@
+name: Release Build and Upload
+
+on:
+  release:
+    types: [ published ]
+
+# 添加权限配置
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  # Windows构建
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -r requirements.txt
+        
+    - name: Get version from tag
+      id: get_version
+      run: |
+        $version = "${{ github.ref_name }}"
+        if ($version.StartsWith("v")) {
+          $version = $version.Substring(1)
+        }
+        echo "version=$version" >> $env:GITHUB_OUTPUT
+        echo "tag=${{ github.ref_name }}" >> $env:GITHUB_OUTPUT
+        
+    - name: Build Windows executable
+      run: |
+        $appName = "元素周期表查询工具-v${{ steps.get_version.outputs.version }}"
+        echo "Building Windows executable: $appName"
+        pyinstaller --onefile --windowed --name "$appName" periodic_table_app.py elements_data.py
+        
+    - name: Verify Windows build
+      run: |
+        $appName = "元素周期表查询工具-v${{ steps.get_version.outputs.version }}"
+        $exePath = "dist\$appName.exe"
+        if (Test-Path $exePath) {
+          $fileSize = (Get-Item $exePath).Length / 1MB
+          echo "✓ Windows可执行文件构建成功: $exePath"
+          echo "✓ 文件大小: $([math]::Round($fileSize, 2)) MB"
+        } else {
+          echo "✗ Windows可执行文件构建失败"
+          exit 1
+        }
+        
+    - name: Upload Windows artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Windows-Executable
+        path: dist/*.exe
+        retention-days: 30
+
+  # macOS构建
+  build-macos:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        pip3 install pyinstaller
+        pip3 install -r requirements.txt
+        
+    - name: Get version from tag
+      id: get_version
+      run: |
+        version="${{ github.ref_name }}"
+        if [[ $version == v* ]]; then
+          version=${version#v}
+        fi
+        echo "version=$version" >> $GITHUB_OUTPUT
+        echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+        
+    - name: Build macOS application
+      run: |
+        appName="PeriodicTableApp-v${{ steps.get_version.outputs.version }}"
+        echo "Building macOS application: $appName"
+        pyinstaller --onefile --windowed --name "$appName" periodic_table_app.py elements_data.py
+        
+    - name: Create macOS .app bundle
+      run: |
+        appName="PeriodicTableApp-v${{ steps.get_version.outputs.version }}"
+        appDir="${appName}.app"
+        
+        echo "Creating .app bundle: $appDir"
+        mkdir -p "$appDir/Contents/MacOS"
+        mkdir -p "$appDir/Contents/Resources"
+        cp "dist/$appName" "$appDir/Contents/MacOS/"
+        
+        # 创建Info.plist文件
+        echo '<?xml version="1.0" encoding="UTF-8"?>' > "$appDir/Contents/Info.plist"
+        echo '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' >> "$appDir/Contents/Info.plist"
+        echo '<plist version="1.0">' >> "$appDir/Contents/Info.plist"
+        echo '<dict>' >> "$appDir/Contents/Info.plist"
+        echo '    <key>CFBundleExecutable</key>' >> "$appDir/Contents/Info.plist"
+        echo "    <string>$appName</string>" >> "$appDir/Contents/Info.plist"
+        echo '    <key>CFBundleIdentifier</key>' >> "$appDir/Contents/Info.plist"
+        echo '    <string>com.periodictable.app</string>' >> "$appDir/Contents/Info.plist"
+        echo '    <key>CFBundleName</key>' >> "$appDir/Contents/Info.plist"
+        echo "    <string>$appName</string>" >> "$appDir/Contents/Info.plist"
+        echo '    <key>CFBundleVersion</key>' >> "$appDir/Contents/Info.plist"
+        echo "    <string>${{ steps.get_version.outputs.version }}</string>" >> "$appDir/Contents/Info.plist"
+        echo '    <key>CFBundleShortVersionString</key>' >> "$appDir/Contents/Info.plist"
+        echo "    <string>${{ steps.get_version.outputs.version }}</string>" >> "$appDir/Contents/Info.plist"
+        echo '    <key>CFBundlePackageType</key>' >> "$appDir/Contents/Info.plist"
+        echo '    <string>APPL</string>' >> "$appDir/Contents/Info.plist"
+        echo '    <key>CFBundleSignature</key>' >> "$appDir/Contents/Info.plist"
+        echo '    <string>????</string>' >> "$appDir/Contents/Info.plist"
+        echo '    <key>LSMinimumSystemVersion</key>' >> "$appDir/Contents/Info.plist"
+        echo '    <string>10.13.0</string>' >> "$appDir/Contents/Info.plist"
+        echo '    <key>NSHighResolutionCapable</key>' >> "$appDir/Contents/Info.plist"
+        echo '    <true/>' >> "$appDir/Contents/Info.plist"
+        echo '</dict>' >> "$appDir/Contents/Info.plist"
+        echo '</plist>' >> "$appDir/Contents/Info.plist"
+        
+        echo "✓ macOS应用程序包创建成功: $appDir"
+        
+    - name: Verify macOS build
+      run: |
+        appName="PeriodicTableApp-v${{ steps.get_version.outputs.version }}"
+        exePath="dist/$appName"
+        appPath="${appName}.app"
+        
+        if [ -f "$exePath" ] && [ -d "$appPath" ]; then
+          exeSize=$(($(stat -f%z "$exePath") / 1024 / 1024))
+          echo "✓ macOS可执行文件构建成功: $exePath"
+          echo "✓ 文件大小: ${exeSize} MB"
+          echo "✓ 应用程序包创建成功: $appPath"
+        else
+          echo "✗ macOS构建失败"
+          exit 1
+        fi
+        
+    - name: Upload macOS artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: macOS-Application
+        path: |
+          dist/PeriodicTableApp-v${{ steps.get_version.outputs.version }}
+          PeriodicTableApp-v${{ steps.get_version.outputs.version }}.app/
+        retention-days: 30
+
+  # 上传到Release
+  upload-release:
+    needs: [build-windows, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download Windows artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: Windows-Executable
+        path: windows/
+        
+    - name: Download macOS artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: macOS-Application
+        path: macos/
+        
+    - name: List downloaded files
+      run: |
+        echo "=== Windows构建产物 ==="
+        ls -la windows/
+        echo ""
+        echo "=== macOS构建产物 ==="
+        ls -la macos/
+        
+    - name: Create Release Assets
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          windows/*.exe
+          macos/PeriodicTableApp-v*
+          macos/*.app/
+        draft: false
+        prerelease: false
+        tag_name: ${{ github.ref_name }}
+        name: "元素周期表查询工具 v${{ github.ref_name }}"
+        body: |
+          ## 🎉 元素周期表查询工具 v${{ github.ref_name }}
+          
+          ### 🚀 更新内容
+          - 自动构建的多平台应用程序
+          - 支持通过元素符号、中文名称、英文名称搜索
+          - 包含119种已知化学元素的详细信息
+          - **数据已内置，无需外部文件**
+          
+          ### 💻 支持平台
+          - **Windows**: 可执行文件 (.exe)
+          - **macOS**: 应用程序包 (.app) + 可执行文件
+          
+          ### 📖 使用方法
+          1. 下载对应平台的构建产物
+          2. 解压文件（如需要）
+          3. 双击运行应用程序
+          4. 在搜索框中输入元素符号或名称
+          5. 查看元素的详细信息
+          
+          ### 📋 构建信息
+          - 版本: ${{ github.ref_name }}
+          - 构建时间: ${{ github.event.release.published_at }}
+          - 构建环境: GitHub Actions
+          - 数据来源: 内置119个化学元素数据
+          
+          ### 🔧 技术特性
+          - 基于Python + tkinter的现代化GUI
+          - 使用PyInstaller打包，无需Python环境
+          - 数据完全内置，确保程序完整性
+          
+          ---
+          
+          *此版本由GitHub Actions自动构建并发布*

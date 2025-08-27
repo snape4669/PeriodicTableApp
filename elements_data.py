@@ -4658,9 +4658,10 @@ def get_elements_data():
     return ELEMENTS_DATA
 
 def get_element_by_symbol(symbol: str):
-    """根据元素符号获取元素信息"""
+    """根据元素符号获取元素信息（大小写不敏感）"""
+    symbol = symbol.strip()
     for element in ELEMENTS_DATA["elements"]:
-        if element["symbol"] == symbol:
+        if element["symbol"].lower() == symbol.lower():
             return element
     return None
 
@@ -4680,17 +4681,17 @@ def get_elements_count():
     return len(ELEMENTS_DATA["elements"])
 
 def search_elements(query: str):
-    """搜索元素（支持符号、名称、部分匹配）"""
+    """搜索元素（支持符号、名称、部分匹配，大小写不敏感）"""
     query = query.lower().strip()
     results = []
     
     for element in ELEMENTS_DATA["elements"]:
-        # 检查符号
+        # 检查符号（精确匹配）
         if element["symbol"].lower() == query:
             results.append(element)
             continue
         
-        # 检查英文名称
+        # 检查英文名称（精确匹配）
         if element["name"].lower() == query:
             results.append(element)
             continue

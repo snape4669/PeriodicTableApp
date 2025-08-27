@@ -67,10 +67,12 @@ PeriodicTableApp/
 ├── README.md                  # 项目说明
 ├── QUICKSTART.md              # 快速启动指南
 ├── RELEASE_GUIDE.md           # 发布指南
+├── RELEASE_WORKFLOW.md        # Release工作流详细说明
 ├── .github/                   # GitHub配置
 │   └── workflows/            # GitHub Actions
-│       ├── build-macos.yml
-│       └── build-windows.yml
+│       ├── build-macos.yml   # macOS构建工作流
+│       ├── build-windows.yml # Windows构建工作流
+│       └── release.yml       # Release发布工作流
 └── dist/                     # 构建输出目录
 ```
 
@@ -99,7 +101,9 @@ PeriodicTableApp/
 3. GitHub Actions自动构建并上传构建产物
 4. 用户可在Release页面下载对应版本
 
-详细说明请查看 [RELEASE_GUIDE.md](RELEASE_GUIDE.md)
+详细说明请查看：
+- [RELEASE_GUIDE.md](RELEASE_GUIDE.md) - 发布指南
+- [RELEASE_WORKFLOW.md](RELEASE_WORKFLOW.md) - Release工作流详细说明
 
 ## 📦 构建可执行文件 (Build Executable)
 
