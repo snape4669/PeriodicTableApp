@@ -46,16 +46,16 @@ jobs:
     - name: Build executable
       run: |
         if ("${{ github.event_name }}" -eq "release") {
-          $appName = "元素周期表查询工具-v${{ steps.get_version.outputs.version }}"
+          $appName = "PeriodicTableApp-v${{ steps.get_version.outputs.version }}"
         } else {
-          $appName = "元素周期表查询工具"
+          $appName = "PeriodicTableApp"
         }
         pyinstaller --onefile --windowed --name "$appName" periodic_table_app.py elements_data.py
         
     - name: Rename executable for release
       if: github.event_name == 'release'
       run: |
-        $appName = "元素周期表查询工具-v${{ steps.get_version.outputs.version }}"
+        $appName = "PeriodicTableApp-v${{ steps.get_version.outputs.version }}"
         $exePath = "dist\$appName.exe"
         if (Test-Path $exePath) {
           echo "✓ 可执行文件构建成功: $exePath"
@@ -100,7 +100,7 @@ jobs:
           4. 查看元素的详细信息
           
           ### 📋 文件信息
-          - 文件名: 元素周期表查询工具-v${{ steps.get_version.outputs.version }}.exe
+          - 文件名: PeriodicTableApp-v${{ steps.get_version.outputs.version }}.exe
           - 构建时间: ${{ github.event.release.published_at }}
           - 构建环境: Windows Latest (GitHub Actions)
           - 数据来源: 内置119个化学元素数据
