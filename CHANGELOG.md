@@ -5,11 +5,18 @@
 ### 🔧 修复
 - **GitHub Actions**: 更新 `actions/upload-artifact` 从 v3 到 v4，解决弃用警告
 - **GitHub Actions**: 更新 `actions/checkout` 从 v3 到 v4，使用最新版本
+- **权限配置**: 添加 `permissions` 配置，解决Release访问权限问题
+- **工作流权限**: 配置 `contents: write` 和 `actions: read` 权限
 
 ### 📋 技术更新
 - 所有工作流文件现在使用最新的GitHub Actions版本
 - 解决了构建时的弃用警告问题
+- 解决了GitHub Release资源访问权限问题
 - 提高了构建的稳定性和兼容性
+
+### 📚 新增文档
+- **GITHUB_PERMISSIONS.md**: GitHub Actions权限配置说明文档
+- 详细的权限问题解决方案和故障排除指南
 
 ## [1.0.0] - 2024-12-19
 
@@ -41,8 +48,7 @@
 - **QUICKSTART.md**: 快速启动指南
 - **RELEASE_GUIDE.md**: 发布指南
 - **CHANGELOG.md**: 更新日志
-
----
+- **GITHUB_PERMISSIONS.md**: GitHub Actions权限配置说明
 
 ## 📋 版本说明
 

@@ -8,6 +8,11 @@ on:
   release:
     types: [ published ]
 
+# 添加权限配置
+permissions:
+  contents: write
+  actions: read
+
 jobs:
   build:
     runs-on: macos-latest
