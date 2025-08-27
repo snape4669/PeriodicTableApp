@@ -180,7 +180,7 @@ def main():
         sys.exit(1)
     
     # 检查必要文件
-    required_files = ["periodic_table_app.py", "PeriodicTableJSON.json"]
+    required_files = ["periodic_table_app.py", "elements_data.py"]
     for file in required_files:
         if not os.path.exists(file):
             print(f"错误: 缺少必要文件 {file}")
@@ -197,7 +197,7 @@ def main():
         print("\n使用说明:")
         print("1. 可执行文件位于 dist/ 目录中")
         print("2. 可以直接运行该文件")
-        print("3. 确保 PeriodicTableJSON.json 文件在同一目录中")
+        print("3. 数据已内置，无需外部文件")
     else:
         print("\n❌ 构建失败！")
         sys.exit(1)

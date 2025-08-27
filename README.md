@@ -54,17 +54,24 @@ python periodic_table_app.py
 ### 项目结构 (Project Structure)
 ```
 PeriodicTableApp/
-├── periodic_table_app.py    # 主应用程序
-├── PeriodicTableJSON.json   # 元素数据文件
-├── requirements.txt         # Python依赖
-├── README.md               # 项目说明
-├── QUICKSTART.md           # 快速启动指南
-├── RELEASE_GUIDE.md        # 发布指南
-├── .github/                # GitHub配置
-│   └── workflows/         # GitHub Actions
+├── periodic_table_app.py      # 主应用程序
+├── elements_data.py           # 元素周期表数据模块（内置）
+├── PeriodicTableJSON.json     # 原始数据文件（开发用）
+├── convert_json_to_python.py  # JSON转Python转换脚本
+├── requirements.txt            # Python依赖
+├── build.py                   # 构建脚本
+├── run.py                     # 启动脚本
+├── run.bat                    # Windows启动脚本
+├── run.sh                     # macOS/Linux启动脚本
+├── test_app.py                # 测试脚本
+├── README.md                  # 项目说明
+├── QUICKSTART.md              # 快速启动指南
+├── RELEASE_GUIDE.md           # 发布指南
+├── .github/                   # GitHub配置
+│   └── workflows/            # GitHub Actions
 │       ├── build-macos.yml
 │       └── build-windows.yml
-└── dist/                  # 构建输出目录
+└── dist/                     # 构建输出目录
 ```
 
 ### 技术栈 (Tech Stack)
@@ -122,6 +129,8 @@ auto-py-to-exe
 - 物理化学性质
 - 发现历史和命名信息
 - 元素分类和周期表位置
+
+**注意**: 数据已内置到程序中，打包后的可执行文件无需外部数据文件即可运行。
 
 ## 🤝 贡献指南 (Contributing)
 

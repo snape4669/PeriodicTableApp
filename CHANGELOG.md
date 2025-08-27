@@ -2,6 +2,12 @@
 
 ## [未发布] - 2024-12-19
 
+### 🚀 重大改进
+- **数据内置化**: 将JSON数据转换为Python模块，消除对外部文件的依赖
+- **打包优化**: 打包后的程序无需外部数据文件即可运行
+- **新增工具**: 添加`convert_json_to_python.py`脚本用于数据转换
+- **性能提升**: 数据加载速度更快，程序启动更稳定
+
 ### 🔧 修复
 - **GitHub Actions**: 更新 `actions/upload-artifact` 从 v3 到 v4，解决弃用警告
 - **GitHub Actions**: 更新 `actions/checkout` 从 v3 到 v4，使用最新版本

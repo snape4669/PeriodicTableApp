@@ -10,10 +10,9 @@ Supports querying element information by chemical symbol or Chinese name
 
 import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext
-import json
-import os
 import re
 from typing import Dict, List, Optional, Any
+from elements_data import get_elements_data, get_element_by_symbol, get_element_by_name, search_elements
 
 class PeriodicTableApp:
     def __init__(self, root):
@@ -37,12 +36,8 @@ class PeriodicTableApp:
     def load_elements_data(self) -> Dict[str, Any]:
         """加载元素周期表数据"""
         try:
-            script_dir = os.path.dirname(os.path.abspath(__file__))
-            json_path = os.path.join(script_dir, "PeriodicTableJSON.json")
-            
-            with open(json_path, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                return data
+            data = get_elements_data()
+            return data
         except Exception as e:
             messagebox.showerror("错误", f"无法加载元素数据: {str(e)}")
             return {"elements": []}
@@ -231,24 +226,24 @@ class PeriodicTableApp:
     
     def find_element(self, query: str) -> Optional[Dict[str, Any]]:
         """查找元素"""
-        query = query.strip().lower()
+        query = query.strip()
         
         # 首先尝试通过符号查找
-        for element in self.elements_data.get("elements", []):
-            if element.get("symbol", "").lower() == query:
-                return element
+        element = get_element_by_symbol(query)
+        if element:
+            return element
         
         # 然后尝试通过中文名称查找
         for symbol, chinese_name in self.chinese_names.items():
-            if chinese_name.lower() == query:
-                for element in self.elements_data.get("elements", []):
-                    if element.get("symbol") == symbol:
-                        return element
+            if chinese_name.lower() == query.lower():
+                element = get_element_by_symbol(symbol)
+                if element:
+                    return element
         
         # 最后尝试通过英文名称查找
-        for element in self.elements_data.get("elements", []):
-            if element.get("name", "").lower() == query:
-                return element
+        element = get_element_by_name(query)
+        if element:
+            return element
         
         return None
     

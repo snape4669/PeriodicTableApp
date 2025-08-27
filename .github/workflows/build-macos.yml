@@ -43,15 +43,15 @@ jobs:
         echo "version=$version" >> $GITHUB_OUTPUT
         echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
         
-    - name: Build application
-      run: |
-        if [ "${{ github.event_name }}" = "release" ]; then
-          appName="PeriodicTableApp-v${{ steps.get_version.outputs.version }}"
-        else
-          appName="PeriodicTableApp"
-        fi
-        echo "Building application: $appName"
-        pyinstaller --onefile --windowed --name "$appName" periodic_table_app.py
+               - name: Build application
+             run: |
+               if [ "${{ github.event_name }}" = "release" ]; then
+                 appName="PeriodicTableApp-v${{ steps.get_version.outputs.version }}"
+               else
+                 appName="PeriodicTableApp"
+               fi
+               echo "Building application: $appName"
+               pyinstaller --onefile --windowed --name "$appName" periodic_table_app.py elements_data.py
         
     - name: Create .app bundle
       run: |
