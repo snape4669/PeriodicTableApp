@@ -1,0 +1,99 @@
+name: Build Windows Executable
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [ published ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -r requirements.txt
+        
+    - name: Get version from tag
+      id: get_version
+      if: github.event_name == 'release'
+      run: |
+        $version = "${{ github.ref_name }}"
+        if ($version.StartsWith("v")) {
+          $version = $version.Substring(1)
+        }
+        echo "version=$version" >> $env:GITHUB_OUTPUT
+        echo "tag=${{ github.ref_name }}" >> $env:GITHUB_OUTPUT
+        
+    - name: Build executable
+      run: |
+        if ("${{ github.event_name }}" -eq "release") {
+          $appName = "元素周期表查询工具-v${{ steps.get_version.outputs.version }}"
+        } else {
+          $appName = "元素周期表查询工具"
+        }
+        pyinstaller --onefile --windowed --name "$appName" periodic_table_app.py
+        
+    - name: Rename executable for release
+      if: github.event_name == 'release'
+      run: |
+        $appName = "元素周期表查询工具-v${{ steps.get_version.outputs.version }}"
+        $exePath = "dist\$appName.exe"
+        if (Test-Path $exePath) {
+          echo "✓ 可执行文件构建成功: $exePath"
+        } else {
+          echo "✗ 可执行文件构建失败"
+          exit 1
+        }
+        
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: PeriodicTableApp-Windows
+        path: dist/
+        
+    - name: Create Release Assets
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          dist/*.exe
+        draft: false
+        prerelease: false
+        tag_name: ${{ steps.get_version.outputs.tag }}
+        name: "元素周期表查询工具 v${{ steps.get_version.outputs.version }}"
+        body: |
+          ## 元素周期表查询工具 v${{ steps.get_version.outputs.version }}
+          
+          ### 更新内容
+          - 自动构建的Windows可执行文件
+          - 支持通过元素符号、中文名称、英文名称搜索
+          - 包含118种已知化学元素的详细信息
+          
+          ### 系统要求
+          - Windows 10 或更高版本
+          - 无需安装Python，即开即用
+          
+          ### 使用方法
+          1. 下载并解压文件
+          2. 双击运行可执行文件
+          3. 在搜索框中输入元素符号或名称
+          4. 查看元素的详细信息
+          
+          ### 文件信息
+          - 文件名: 元素周期表查询工具-v${{ steps.get_version.outputs.version }}.exe
+          - 构建时间: ${{ github.event.release.published_at }}
+          - 构建环境: Windows Latest (GitHub Actions)

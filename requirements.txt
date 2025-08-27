@@ -1,0 +1,26 @@
+# 元素周期表查询工具依赖
+# Periodic Table Query Tool Dependencies
+
+# 核心依赖 - Core Dependencies
+# tkinter 是Python标准库的一部分，不需要额外安装
+# tkinter is part of Python standard library, no additional installation needed
+
+# 可选依赖 - Optional Dependencies
+# 如果需要更好的界面效果，可以安装以下包
+# For better UI effects, you can install the following packages
+
+# 字体支持 - Font Support
+# 在Windows上，Microsoft YaHei字体是默认的
+# On Windows, Microsoft YaHei font is default
+# 在macOS上，可以使用系统默认字体
+# On macOS, you can use system default fonts
+# 在Linux上，建议安装文泉驿字体
+# On Linux, it's recommended to install WenQuanYi fonts
+
+# 打包工具 - Packaging Tools
+pyinstaller>=5.0.0
+auto-py-to-exe>=2.20.0
+
+# 开发工具 - Development Tools
+pylint>=2.15.0
+black>=22.0.0
