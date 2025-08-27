@@ -13,6 +13,7 @@
 - **GitHub Actions**: 更新 `actions/checkout` 从 v3 到 v4，使用最新版本
 - **权限配置**: 添加 `permissions` 配置，解决Release访问权限问题
 - **工作流权限**: 配置 `contents: write` 和 `actions: read` 权限
+- **YAML格式**: 修复工作流文件中的缩进错误，解决PowerShell解析失败问题
 
 ### 📋 技术更新
 - 所有工作流文件现在使用最新的GitHub Actions版本

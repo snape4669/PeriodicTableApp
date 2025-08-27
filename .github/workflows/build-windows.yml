@@ -43,14 +43,14 @@ jobs:
         echo "version=$version" >> $env:GITHUB_OUTPUT
         echo "tag=${{ github.ref_name }}" >> $env:GITHUB_OUTPUT
         
-               - name: Build executable
-             run: |
-               if ("${{ github.event_name }}" -eq "release") {
-                 $appName = "元素周期表查询工具-v${{ steps.get_version.outputs.version }}"
-               } else {
-                 $appName = "元素周期表查询工具"
-               }
-               pyinstaller --onefile --windowed --name "$appName" periodic_table_app.py elements_data.py
+    - name: Build executable
+      run: |
+        if ("${{ github.event_name }}" -eq "release") {
+          $appName = "元素周期表查询工具-v${{ steps.get_version.outputs.version }}"
+        } else {
+          $appName = "元素周期表查询工具"
+        }
+        pyinstaller --onefile --windowed --name "$appName" periodic_table_app.py elements_data.py
         
     - name: Rename executable for release
       if: github.event_name == 'release'
